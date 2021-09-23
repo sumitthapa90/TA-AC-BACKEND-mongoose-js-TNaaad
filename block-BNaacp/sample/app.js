@@ -10,9 +10,7 @@ var app = express();
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
+//roughts
 
 app.post("/users", (req, res, next) => {
   User.create(req.body, (err, user) => {
@@ -21,18 +19,35 @@ app.post("/users", (req, res, next) => {
   });
 });
 
-app.get("/users", (req, res) => {
+app.get("/users", (req, res, next) => {
   User.find({}, (err, users) => {
     console.log(err);
     res.json({ users: users });
   });
 });
 
-app.get("/user/:id", (err, users) => {
+app.get("/user/:id", (err, users, next) => {
   var id = req.params.id;
   User.findById(id, (err, users) => {
     console.log(err);
     res.json(users);
+  });
+});
+
+app.put("/users/:id", (req, res, next) => {
+  var data = req.body;
+  var id = req.params.id;
+  User.findByIdAndUpdate(id, data, { new: true }, (err, updatedUser) => {
+    if (err) return next(err);
+    res.json(updatedUser);
+  });
+});
+
+app.delete("/users/:id", (req, res, next) => {
+  var id = req.params.id;
+  User.findByIdAndDelete(id, (err, deletedUser) => {
+    if (err) return next(err);
+    res.send(`${deletedUser.name} is deleted.`);
   });
 });
 
